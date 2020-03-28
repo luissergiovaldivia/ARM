@@ -19,7 +19,6 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stdio.h"
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -29,14 +28,11 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-	RTC_TimeTypeDef	sTime1;
-	RTC_DateTypeDef sDate1;
 
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 
 /* USER CODE END PD */
 
@@ -48,13 +44,6 @@
 /* Private variables ---------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
 
-	uint8_t buffer_dias[20];
-	uint8_t buffer_tiempo[20];
-  uint8_t digitos[20];
-	
-	//uint16_t BaseDatosled [10] = {0x00FE, 0x000C, 0x0136, 0x011E, 0x01CC, 0x01DA, 0x01F8, 0x000E, 0x01FE, 0x01CE};
-	uint16_t BaseDatosled [10] = {0x007E, 0x000C, 0x00B6, 0x009E, 0x00CC, 0x00DA, 0x00F8, 0x000E, 0x00FE, 0x00CE}; 
-
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -64,67 +53,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
-
-void Get_rtc()
-{
-			HAL_RTC_GetTime(&hrtc, &sTime1, RTC_FORMAT_BCD);
-			HAL_RTC_GetDate(&hrtc, &sDate1, RTC_FORMAT_BCD);
-		
-			buffer_dias[0] =	(sDate1.Date / 16) + 48;
-			buffer_dias[1] =	(sDate1.Date % 16) + 48;
-			buffer_dias[2] =	'.';
-			buffer_dias[3] =	(sDate1.Month / 16) + 48;
-			buffer_dias[4] =	(sDate1.Month % 16) + 48;
-			buffer_dias[5] = '.';
-			buffer_dias[6] = '2';
-			buffer_dias[7] = '0';
-			buffer_dias[8] = (sDate1.Year / 16) + 48;
-			buffer_dias[9] = (sDate1.Year % 16 ) + 48;
-			buffer_tiempo[0] = '@';
-			buffer_tiempo[1] = (sTime1.Hours /16) + 48;
-			buffer_tiempo[2] = (sTime1.Hours % 16) + 48;
-			buffer_tiempo[3] = ':';
-			buffer_tiempo[4] = (sTime1.Minutes /16) + 48;
-			buffer_tiempo[5] = (sTime1.Minutes % 16) + 48;
-			buffer_tiempo[6] = ':';
-			buffer_tiempo[7] = (sTime1.Seconds / 16) + 48;
-			buffer_tiempo[8] = (sTime1.Seconds % 16) + 48;
-
-			digitos[14] = (sTime1.Minutes / 10);
-			digitos[15] = (sTime1.Minutes % 10);
-			digitos[17] = (sTime1.Seconds / 10);
-			digitos[18] = (sTime1.Seconds % 10);
-      
-}
-
-		void encender_display ()
-		{
-			uint16_t digito1;
-			
-			//digito1 = BaseDatosled[buffer_tiempo[8]];
-		
-			//GPIOA->ODR = BaseDatosled[buffer_tiempo[8]];; //Displaying 0
-			GPIOA->ODR = BaseDatosled[buffer_tiempo[18]]; //Displaying 0
-			HAL_Delay(500);
-			GPIOB->ODR = 0x0040;
-			HAL_Delay(500);
-			
-			GPIOA->ODR = BaseDatosled[buffer_tiempo[17]]; //Displaying 0
-			HAL_Delay(500);
-			GPIOB->ODR = 0x0080;
-			HAL_Delay(500);
-			
-			GPIOA->ODR = BaseDatosled[buffer_tiempo[14]]; //Displaying 0
-			HAL_Delay(500);
-			GPIOB->ODR = 0x0100;
-			HAL_Delay(500);
-			
-			GPIOA->ODR = BaseDatosled[buffer_tiempo[15]]; //Displaying 0
-			HAL_Delay(500);
-			GPIOB->ODR = 0x0200;
-			HAL_Delay(500);
-			
-		}
 
 /* USER CODE END PFP */
 
@@ -141,9 +69,13 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 	
+	RTC_TimeTypeDef	sTime1;
+	RTC_DateTypeDef sDate1;
 	// RTC_DateTypeDef sDate1;
+	uint8_t buffer_dias[20];
+	uint8_t buffer_tiempo[20];
 	
-	
+
   /* USER CODE END 1 */
   
 
@@ -175,51 +107,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-		
-		Get_rtc();
-			
-		encender_display();
-			
-			if(sTime1.Hours == 0x18)
-		{
-			if(sTime1.Minutes == 0x12)
-		{
-			if(sTime1.Seconds == 0x00)
-			{
-			
-		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-			HAL_GPIO_WritePin(GPIOA, Led_motor_Pin, GPIO_PIN_SET);
-			
-		HAL_Delay(1000);
-			}
-		}
-		
-		}
-		
-		if(sTime1.Hours == 0x18)
-		{
-			if(sTime1.Minutes == 0x12)
-		{
-			if (sTime1.Seconds == 0x10)
-			{
-			
-		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-			HAL_GPIO_WritePin(GPIOA, Led_motor_Pin, GPIO_PIN_RESET);
-			
-		HAL_Delay(1000);
-			}
-		}
-		
-		}
-			
-			
-			
-			//HAL_UART_Transmit(huart1, (uint8_t *) _out, strlen(_out), 10);
-			//HAL_UART_Transmit(&huart1, (uint8_t *) buffer_dias, 10, 10);
-			//HAL_UART_Transmit(&huart1, (uint8_t *) buffer_tiempo, 10, 10);
-			char newline[2] = "\r\n";
-			//HAL_UART_Transmit(&huart1, (uint8_t *) newline, 2, 10);
-			//HAL_Delay(1000);
 
     /* USER CODE BEGIN 3 */
   }

@@ -1,6 +1,7 @@
 Dependencies for Project 'RTC_STM32', Target 'RTC_STM32': (DO NOT MODIFY !)
 F (startup_stm32f103xb.s)(0x5E7542E7)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_RTC_STM32-IC:\Users\Sofia\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Users\Sofia\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.2.0\Device\Include--pd "__UVISION_VERSION SETA 528" --pd "_RTE_ SETA 1" --pd "STM32F10X_MD SETA 1"--list startup_stm32f103xb.lst --xref -o rtc_stm32\startup_stm32f103xb.o --depend rtc_stm32\startup_stm32f103xb.d)
-F (../Src/main.c)(0x5E78DE3D)(--c99 -c --cpu Cortex-M3 -D__EVAL -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_RTC_STM32-IC:\Users\Sofia\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Users\Sofia\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.2.0\Device\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB -DUSE_HAL_DRIVER -DSTM32F103xB-o rtc_stm32\main.o --omf_browse rtc_stm32\main.crf --depend rtc_stm32\main.d)
+F (../Src/main.c)(0x5E7F6C32)(--c99 -c --cpu Cortex-M3 -D__EVAL -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_RTC_STM32-IC:\Users\Sofia\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Users\Sofia\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.2.0\Device\Include-D__UVISION_VERSION="528" -D_RTE_ -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB -DUSE_HAL_DRIVER -DSTM32F103xB-o rtc_stm32\main.o --omf_browse rtc_stm32\main.crf --depend rtc_stm32\main.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5CEC1492)
 I (../Inc/main.h)(0x5E7542DF)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x5D852629)
 I (../Inc/stm32f1xx_hal_conf.h)(0x5E7542DF)
@@ -14,7 +15,6 @@ I (../Drivers/CMSIS/Include/core_cmInstr.h)(0x5D852628)
 I (../Drivers/CMSIS/Include/cmsis_armcc.h)(0x5D852628)
 I (../Drivers/CMSIS/Include/core_cmFunc.h)(0x5D852628)
 I (../Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h)(0x5D852623)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5CEC1492)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc_ex.h)(0x5D852629)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h)(0x5D852629)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio_ex.h)(0x5D852629)
