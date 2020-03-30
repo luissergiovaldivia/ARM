@@ -54,11 +54,10 @@ RTC_HandleTypeDef hrtc;
 
 	uint8_t buffer_dias[20];
 	uint8_t buffer_tiempo[20];
-  //uint16_t digitos[20];
+  
 	uint8_t digitos[20];
 	
 	
-	//uint16_t BaseDatosled [10] = {0x00FE, 0x000C, 0x0136, 0x011E, 0x01CC, 0x01DA, 0x01F8, 0x000E, 0x01FE, 0x01CE};
 	uint16_t BaseDatosled [10] = {0x007E, 0x000C, 0x00B6, 0x009E, 0x00CC, 0x00DA, 0x00F8, 0x000E, 0x00FE, 0x00CE}; 
 
 /* USER CODE BEGIN PV */
@@ -100,12 +99,9 @@ void Get_rtc()
 			buffer_tiempo[7] = (sTime1.Seconds / 16) + 48;
 			buffer_tiempo[8] = (sTime1.Seconds % 16) + 48;
 			
-			//int ejemplo;
-			
-			//digitos[14] = sTime1.Minutes;
 
 			digitos[14] = (BCD_a_DEC(sTime1.Minutes) / 10);
-			//digitos[14] = (BCD_a_DEC(ejemplo) / 10);
+		
 			digitos[15] = (BCD_a_DEC(sTime1.Minutes) % 10);
 			digitos[17] = (BCD_a_DEC(sTime1.Seconds) / 10);
 			digitos[18] = (BCD_a_DEC(sTime1.Seconds) % 10);
@@ -116,28 +112,26 @@ void Get_rtc()
 		{
 			uint16_t digito1;
 			
-			//digito1 = BaseDatosled[buffer_tiempo[8]];
-		
-			//GPIOA->ODR = BaseDatosled[buffer_tiempo[8]];; //Displaying 0
-			GPIOA->ODR = ~(BaseDatosled[digitos[18]]); //Displaying 0
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[18]]); //Displaying 1
 			//HAL_Delay(500);
 			GPIOB->ODR = 0x0040;
 			HAL_Delay(5);
 			
 			
-			GPIOA->ODR = ~(BaseDatosled[digitos[17]]); //Displaying 0
+			GPIOA->ODR = ~(BaseDatosled[digitos[17]]); //Displaying 2
 			//HAL_Delay(500);
 			GPIOB->ODR = 0x0080;
 			HAL_Delay(5);
 			
 			GPIOB->ODR = 0x0100;
 			//HAL_Delay(500);
-			GPIOA->ODR = ~(BaseDatosled[digitos[15]]); //Displaying 0
+			GPIOA->ODR = ~(BaseDatosled[digitos[15]]); //Displaying 3
 			HAL_Delay(5);
 			
 			GPIOB->ODR = 0x0200;
 		//	HAL_Delay(500);
-			GPIOA->ODR = ~(BaseDatosled[digitos[14]]); //Displaying 0
+			GPIOA->ODR = ~(BaseDatosled[digitos[14]]); //Displaying 4
 			HAL_Delay(5);
 			
 			
