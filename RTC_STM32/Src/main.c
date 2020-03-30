@@ -21,6 +21,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stdio.h"
 #include "main.h"
+#include "stdlib.h"
+#include "string.h"
+#include "stdarg.h"
+#include "stm32f1xx_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -50,7 +54,9 @@ RTC_HandleTypeDef hrtc;
 
 	uint8_t buffer_dias[20];
 	uint8_t buffer_tiempo[20];
-  uint8_t digitos[20];
+  //uint16_t digitos[20];
+	uint8_t digitos[20];
+	
 	
 	//uint16_t BaseDatosled [10] = {0x00FE, 0x000C, 0x0136, 0x011E, 0x01CC, 0x01DA, 0x01F8, 0x000E, 0x01FE, 0x01CE};
 	uint16_t BaseDatosled [10] = {0x007E, 0x000C, 0x00B6, 0x009E, 0x00CC, 0x00DA, 0x00F8, 0x000E, 0x00FE, 0x00CE}; 
@@ -63,10 +69,14 @@ RTC_HandleTypeDef hrtc;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_RTC_Init(void);
+	
+	uint8_t BCD_a_DEC(uint8_t data);
+	
 /* USER CODE BEGIN PFP */
 
 void Get_rtc()
 {
+			//digitos[0]= 0x00;
 			HAL_RTC_GetTime(&hrtc, &sTime1, RTC_FORMAT_BCD);
 			HAL_RTC_GetDate(&hrtc, &sDate1, RTC_FORMAT_BCD);
 		
@@ -89,11 +99,16 @@ void Get_rtc()
 			buffer_tiempo[6] = ':';
 			buffer_tiempo[7] = (sTime1.Seconds / 16) + 48;
 			buffer_tiempo[8] = (sTime1.Seconds % 16) + 48;
+			
+			//int ejemplo;
+			
+			//digitos[14] = sTime1.Minutes;
 
-			digitos[14] = (sTime1.Minutes / 10);
-			digitos[15] = (sTime1.Minutes % 10);
-			digitos[17] = (sTime1.Seconds / 10);
-			digitos[18] = (sTime1.Seconds % 10);
+			digitos[14] = (BCD_a_DEC(sTime1.Minutes) / 10);
+			//digitos[14] = (BCD_a_DEC(ejemplo) / 10);
+			digitos[15] = (BCD_a_DEC(sTime1.Minutes) % 10);
+			digitos[17] = (BCD_a_DEC(sTime1.Seconds) / 10);
+			digitos[18] = (BCD_a_DEC(sTime1.Seconds) % 10);
       
 }
 
@@ -104,27 +119,43 @@ void Get_rtc()
 			//digito1 = BaseDatosled[buffer_tiempo[8]];
 		
 			//GPIOA->ODR = BaseDatosled[buffer_tiempo[8]];; //Displaying 0
-			GPIOA->ODR = BaseDatosled[buffer_tiempo[18]]; //Displaying 0
-			HAL_Delay(500);
+			GPIOA->ODR = ~(BaseDatosled[digitos[18]]); //Displaying 0
+			//HAL_Delay(500);
 			GPIOB->ODR = 0x0040;
-			HAL_Delay(500);
+			HAL_Delay(5);
 			
-			GPIOA->ODR = BaseDatosled[buffer_tiempo[17]]; //Displaying 0
-			HAL_Delay(500);
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[17]]); //Displaying 0
+			//HAL_Delay(500);
 			GPIOB->ODR = 0x0080;
-			HAL_Delay(500);
+			HAL_Delay(5);
 			
-			GPIOA->ODR = BaseDatosled[buffer_tiempo[14]]; //Displaying 0
-			HAL_Delay(500);
 			GPIOB->ODR = 0x0100;
-			HAL_Delay(500);
+			//HAL_Delay(500);
+			GPIOA->ODR = ~(BaseDatosled[digitos[15]]); //Displaying 0
+			HAL_Delay(5);
 			
-			GPIOA->ODR = BaseDatosled[buffer_tiempo[15]]; //Displaying 0
-			HAL_Delay(500);
 			GPIOB->ODR = 0x0200;
-			HAL_Delay(500);
+		//	HAL_Delay(500);
+			GPIOA->ODR = ~(BaseDatosled[digitos[14]]); //Displaying 0
+			HAL_Delay(5);
+			
 			
 		}
+		
+	
+		
+		
+		// add function to convert  bcd to decimal and decimal to bcd
+
+uint8_t BCD_a_DEC(uint8_t data){			// BCD to Decimal
+	return (data>>4)*10+(data&0x0F);
+}
+
+uint8_t DEC_a_BCD(uint8_t data){			// Decimal to BCD
+	return (data/10)<<4 | (data%10);
+}
+		
 
 /* USER CODE END PFP */
 
@@ -198,7 +229,7 @@ int main(void)
 		
 		if(sTime1.Hours == 0x18)
 		{
-			if(sTime1.Minutes == 0x12)
+			if(sTime1.Minutes == 0x50)
 		{
 			if (sTime1.Seconds == 0x10)
 			{
@@ -305,8 +336,8 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date 
   */
-  sTime.Hours = 0x18;
-  sTime.Minutes = 0x11;
+  sTime.Hours = 0x12;
+  sTime.Minutes = 0x52;
   sTime.Seconds = 0x0;
 
   if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)

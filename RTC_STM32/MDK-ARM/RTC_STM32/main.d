@@ -25,3 +25,6 @@ rtc_stm32\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 rtc_stm32\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 rtc_stm32\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h
 rtc_stm32\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc_ex.h
+rtc_stm32\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+rtc_stm32\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+rtc_stm32\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
