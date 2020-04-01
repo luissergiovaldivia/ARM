@@ -50,36 +50,43 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-RTC_HandleTypeDef hrtc;
+	RTC_HandleTypeDef hrtc;
 
 	uint8_t buffer_dias[20];
 	uint8_t buffer_tiempo[20];
   
 	uint8_t digitos[20];
-	
-	
+	// *************************************************************
+	// ****crear base de datos para mostar en Display 7 segmento****
+	// ***************************************************************
 	uint16_t BaseDatosled [10] = {0x007E, 0x000C, 0x00B6, 0x009E, 0x00CC, 0x00DA, 0x00F8, 0x000E, 0x00FE, 0x00CE}; 
+	
+	// end
 
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_RTC_Init(void);
+	void SystemClock_Config(void);
+	static void MX_GPIO_Init(void);
+	static void MX_RTC_Init(void);
 	
 	uint8_t BCD_a_DEC(uint8_t data);
 	
 /* USER CODE BEGIN PFP */
+	
+	// ***************************************************************
+	// ****Funcion a HAL_RTC para ver fecha y hora								****
+	// ***************************************************************
 
 void Get_rtc()
 {
-			//digitos[0]= 0x00;
+			
 			HAL_RTC_GetTime(&hrtc, &sTime1, RTC_FORMAT_BCD);
 			HAL_RTC_GetDate(&hrtc, &sDate1, RTC_FORMAT_BCD);
 		
-			buffer_dias[0] =	(sDate1.Date / 16) + 48;
+			/*buffer_dias[0] =	(sDate1.Date / 16) + 48;
 			buffer_dias[1] =	(sDate1.Date % 16) + 48;
 			buffer_dias[2] =	'.';
 			buffer_dias[3] =	(sDate1.Month / 16) + 48;
@@ -97,50 +104,111 @@ void Get_rtc()
 			buffer_tiempo[5] = (sTime1.Minutes % 16) + 48;
 			buffer_tiempo[6] = ':';
 			buffer_tiempo[7] = (sTime1.Seconds / 16) + 48;
-			buffer_tiempo[8] = (sTime1.Seconds % 16) + 48;
+			buffer_tiempo[8] = (sTime1.Seconds % 16) + 48;*/
 			
-
+			
+			
+			digitos[0] = (BCD_a_DEC(sDate1.Date) / 10);
+			digitos[1] = (BCD_a_DEC(sDate1.Date) % 10);
+			digitos[3] = (BCD_a_DEC(sDate1.Month) / 10);
+			digitos[4] = (BCD_a_DEC(sDate1.Month) % 10);
+			digitos[8] = (BCD_a_DEC(sDate1.Year) / 10);
+			digitos[9] = (BCD_a_DEC(sDate1.Year) % 10);
+			digitos[11] = (BCD_a_DEC(sTime1.Hours) / 10);
+			digitos[12] = (BCD_a_DEC(sTime1.Hours) % 10);
 			digitos[14] = (BCD_a_DEC(sTime1.Minutes) / 10);
-		
 			digitos[15] = (BCD_a_DEC(sTime1.Minutes) % 10);
 			digitos[17] = (BCD_a_DEC(sTime1.Seconds) / 10);
 			digitos[18] = (BCD_a_DEC(sTime1.Seconds) % 10);
       
 }
+			 //end
 
-		void encender_display ()
+	// ***************************************************************
+	// ****Funcion para visualizar minutos y segundos							****
+	// ***************************************************************
+		//void encender_display ()
+
+		
+			void visualizar_minutos_segundos()
 		{
 			uint16_t digito1;
 			
 			
-			GPIOA->ODR = ~(BaseDatosled[digitos[18]]); //Displaying 1
+			GPIOA->ODR = ~(BaseDatosled[digitos[15]]); //Displaying 1
 			//HAL_Delay(500);
 			GPIOB->ODR = 0x0040;
 			HAL_Delay(5);
 			
 			
-			GPIOA->ODR = ~(BaseDatosled[digitos[17]]); //Displaying 2
+			GPIOA->ODR = ~(BaseDatosled[digitos[14]]); //Displaying 2
 			//HAL_Delay(500);
 			GPIOB->ODR = 0x0080;
 			HAL_Delay(5);
 			
 			GPIOB->ODR = 0x0100;
 			//HAL_Delay(500);
-			GPIOA->ODR = ~(BaseDatosled[digitos[15]]); //Displaying 3
+			GPIOA->ODR = ~(BaseDatosled[digitos[12]]); //Displaying 3
 			HAL_Delay(5);
 			
 			GPIOB->ODR = 0x0200;
 		//	HAL_Delay(500);
-			GPIOA->ODR = ~(BaseDatosled[digitos[14]]); //Displaying 4
+			GPIOA->ODR = ~(BaseDatosled[digitos[11]]); //Displaying 4
 			HAL_Delay(5);
 			
 			
 		}
+		 //end
+	// ***************************************************************
+	// ****Funcionpara encender led o motor a una hora determinada****
+	// ***************************************************************
 		
+		void encender_led()
+		{
+			if(sTime1.Hours == 0x18)
+		{
+			if(sTime1.Minutes == 0x12)
+		{
+			if(sTime1.Seconds == 0x00)
+			{
+			
+		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+			HAL_GPIO_WritePin(GPIOA, Led_motor_Pin, GPIO_PIN_SET);
+			
+		HAL_Delay(1000);
+			}
+		}
+		
+		}
+		
+		if(sTime1.Hours == 0x18)
+		{
+			if(sTime1.Minutes == 0x50)
+		{
+			if (sTime1.Seconds == 0x10)
+			{
+			
+		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+			HAL_GPIO_WritePin(GPIOA, Led_motor_Pin, GPIO_PIN_RESET);
+			
+		HAL_Delay(1000);
+			}
+		}
+		
+		}
+		
+		
+		}
+		 //end
 	
 		
 		
 		// add function to convert  bcd to decimal and decimal to bcd
+		
+		// ***************************************************************
+	// ****Funcion para convertir BCD a decimal o decimal a BCD			****
+	// ***************************************************************
+		 
 
 uint8_t BCD_a_DEC(uint8_t data){			// BCD to Decimal
 	return (data>>4)*10+(data&0x0F);
@@ -150,7 +218,7 @@ uint8_t DEC_a_BCD(uint8_t data){			// Decimal to BCD
 	return (data/10)<<4 | (data%10);
 }
 		
-
+		//end
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -201,41 +269,17 @@ int main(void)
   {
     /* USER CODE END WHILE */
 		
-		Get_rtc();
+			Get_rtc();
 			
-		encender_display();
-			
-			if(sTime1.Hours == 0x18)
-		{
-			if(sTime1.Minutes == 0x12)
-		{
-			if(sTime1.Seconds == 0x00)
-			{
-			
-		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-			HAL_GPIO_WritePin(GPIOA, Led_motor_Pin, GPIO_PIN_SET);
-			
-		HAL_Delay(1000);
-			}
-		}
+		visualizar_minutos_segundos();
 		
-		}
 		
-		if(sTime1.Hours == 0x18)
-		{
-			if(sTime1.Minutes == 0x50)
-		{
-			if (sTime1.Seconds == 0x10)
-			{
 			
-		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-			HAL_GPIO_WritePin(GPIOA, Led_motor_Pin, GPIO_PIN_RESET);
-			
-		HAL_Delay(1000);
-			}
-		}
+		encender_led();
 		
-		}
+		
+		
+		
 			
 			
 			
@@ -330,8 +374,8 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date 
   */
-  sTime.Hours = 0x12;
-  sTime.Minutes = 0x52;
+  sTime.Hours = 0x18;
+  sTime.Minutes = 0x11;
   sTime.Seconds = 0x0;
 
   if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
@@ -396,18 +440,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Sumar_Pin Enter_Pin Restar_Pin */
-  GPIO_InitStruct.Pin = Sumar_Pin|Enter_Pin|Restar_Pin;
+  /*Configure GPIO pins : Sumar_Pin Enter_Pin Restar_Pin Boton_subir_Pin 
+                           Boton_Enter_Pin Boton_bajar_Pin */
+  GPIO_InitStruct.Pin = Sumar_Pin|Enter_Pin|Restar_Pin|Boton_subir_Pin 
+                          |Boton_Enter_Pin|Boton_bajar_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB10 PB11 PB12 PB13 
-                           PB14 PB15 PB3 PB4 
-                           PB5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13 
-                          |GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_3|GPIO_PIN_4 
-                          |GPIO_PIN_5;
+  /*Configure GPIO pins : PB10 PB11 PB15 PB3 
+                           PB4 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_15|GPIO_PIN_3 
+                          |GPIO_PIN_4|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 

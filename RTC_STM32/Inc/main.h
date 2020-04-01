@@ -78,6 +78,12 @@ void Error_Handler(void);
 #define Enter_GPIO_Port GPIOB
 #define Restar_Pin GPIO_PIN_2
 #define Restar_GPIO_Port GPIOB
+#define Boton_subir_Pin GPIO_PIN_12
+#define Boton_subir_GPIO_Port GPIOB
+#define Boton_Enter_Pin GPIO_PIN_13
+#define Boton_Enter_GPIO_Port GPIOB
+#define Boton_bajar_Pin GPIO_PIN_14
+#define Boton_bajar_GPIO_Port GPIOB
 #define Led_motor_Pin GPIO_PIN_10
 #define Led_motor_GPIO_Port GPIOA
 #define Digito_1_Pin GPIO_PIN_6
