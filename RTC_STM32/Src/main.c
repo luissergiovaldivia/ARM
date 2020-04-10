@@ -54,6 +54,17 @@
 
 	uint8_t buffer_dias[20];
 	uint8_t buffer_tiempo[20];
+	uint8_t Minutos;
+	uint8_t Horas;
+	uint8_t digito1_hora_alarma, digito2_hora_alarma; 
+	uint8_t digito1_minuto_alarma, digito2_minuto_alarma;
+	int EstadoActualSumar, Boton_subir, EstadoActualSubir, unidades;
+	uint8_t EstadoActualMenu;
+	uint8_t  EstadoAnteriorMenu;
+	uint8_t EstadoActualModificacion,  EstadoAnteriorModificacion;
+	int salir, set_rtc, Menu, Encendido_Menu, Encendido_Modificacion;
+	
+	
   
 	uint8_t digitos[20];
 	// *************************************************************
@@ -73,8 +84,29 @@
 	static void MX_RTC_Init(void);
 	
 	uint8_t BCD_a_DEC(uint8_t data);
+	uint8_t DEC_a_BCD(uint8_t data);
+	
 	
 /* USER CODE BEGIN PFP */
+	
+													//*****************************
+													//*** gestion de funciones ****
+													//*****************************
+	
+	// ***************************************************************
+	// ****Funcion a HAL_RTC para set fecha y hora								****
+	// ***************************************************************
+	
+	void Set_time( )
+				{
+					sTime1.Hours = DEC_a_BCD(Horas);
+					sTime1.Minutes = DEC_a_BCD(Minutos);
+					//sTime1.Segundos = DEC_a_BCD (digitos[18]);
+				HAL_RTC_SetTime ( &hrtc, &sTime1, RTC_FORMAT_BCD);
+
+					}
+	
+	
 	
 	// ***************************************************************
 	// ****Funcion a HAL_RTC para ver fecha y hora								****
@@ -123,14 +155,14 @@ void Get_rtc()
       
 }
 			 //end
-
+								
 	// ***************************************************************
-	// ****Funcion para visualizar minutos y segundos							****
+	// ****Funcion para visualizar Hora y minutos   							****
 	// ***************************************************************
 		//void encender_display ()
 
 		
-			void visualizar_minutos_segundos()
+			void visualizar_Horas_minutos()
 		{
 			uint16_t digito1;
 			
@@ -146,19 +178,188 @@ void Get_rtc()
 			GPIOB->ODR = 0x0080;
 			HAL_Delay(5);
 			
-			GPIOB->ODR = 0x0100;
-			//HAL_Delay(500);
 			GPIOA->ODR = ~(BaseDatosled[digitos[12]]); //Displaying 3
+		  GPIOB->ODR = 0x0100;
+			//HAL_Delay(500);
+			
 			HAL_Delay(5);
 			
+			GPIOA->ODR = ~(BaseDatosled[digitos[11]]); //Displaying 4
 			GPIOB->ODR = 0x0200;
 		//	HAL_Delay(500);
-			GPIOA->ODR = ~(BaseDatosled[digitos[11]]); //Displaying 4
+			
 			HAL_Delay(5);
 			
 			
 		}
 		 //end
+		
+		// ***************************************************************
+	  // ****          Funcion para visualizar  segundos		    ********
+	  // ***************************************************************
+		
+		void segundos ( )
+			{
+				
+			GPIOA->ODR = ~(BaseDatosled[digitos[18]]); //Displaying 1
+		  GPIOB->ODR = 0x0040;
+			HAL_Delay(5);
+			
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[17]]); //Displaying 2
+			GPIOB->ODR = 0x0080;
+			HAL_Delay(5);
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[12]]); //Displaying 3			
+			GPIOB->ODR = 0x0000;
+			HAL_Delay(5);
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[11]]); //Displaying 4			
+			GPIOB->ODR = 0x0000;
+			HAL_Delay(5);
+				}
+
+						// ***************************************************************
+						// ****          Funcion para visualizar  Alarma  		    ********
+						// ***************************************************************
+				
+				void  alarma ( ) 
+		{
+			digito1_hora_alarma = BCD_a_DEC(0x00) ;
+			digito2_hora_alarma = BCD_a_DEC(0x00) ;
+			digito1_minuto_alarma = BCD_a_DEC(0x00) ;
+		  digito2_minuto_alarma = BCD_a_DEC(0x00) ;
+
+			
+
+			GPIOA->ODR = ~(BaseDatosled [digito1_hora_alarma]);
+			GPIOB->ODR = 0x0040 ;
+			HAL_Delay (5) ;
+
+			GPIOA->ODR = ~(BaseDatosled [digito2_hora_alarma]);
+			GPIOB->ODR = 0x0080 ;
+			HAL_Delay (5);
+
+			GPIOA->ODR = ~(BaseDatosled [digito1_hora_alarma]);
+			GPIOB->ODR = 0x0100 ;
+			HAL_Delay (5);
+
+			GPIOA->ODR = ~(BaseDatosled [digito2_hora_alarma]);
+			GPIOB->ODR = 0x0200 ;
+			HAL_Delay (5);
+			}
+		
+						// ***************************************************************
+						// ****          Funcion para Modificar Hora		    ********
+						// ***************************************************************
+			void Modificar_Hora ( )
+			{
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[15]]); //Displaying 1
+			GPIOB->ODR = 0x0040;
+			HAL_Delay(5);
+			
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[14]]); //Displaying 2
+			GPIOB->ODR = 0x0080;
+			HAL_Delay(5);
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[12]]); //Displaying 3			
+			GPIOB->ODR = 0x0100;
+			HAL_Delay(10);
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[11]]); //Displaying 4			
+			GPIOB->ODR = 0x0200;
+			HAL_Delay(10);
+
+			EstadoActualSumar = HAL_GPIO_ReadPin(GPIOB, Boton_subir_Pin);
+
+			//if ( EstadoActualSubir == 1 && EstadoAnteriorSubir == 0)
+				if ( EstadoActualSubir == 1 )
+					{
+				if (unidades == 1)
+					{	
+						digitos [11] = digitos [11] ++;
+						//Horas = Horas++ ;
+						Horas++ ;
+						unidades = 0;
+						}
+					else 
+						{
+							digitos[12] = digitos[12]++;
+							//Horas = Horas++;
+							Horas++ ;
+							if ( digitos[12] == 9)
+								{
+									unidades = 1;
+									digitos [12] =0;
+									
+									}
+						}
+					}
+				else 
+					{
+						unidades = 0;
+						}		
+					
+					}
+			
+					  // ***************************************************************
+						// ****          Funcion para Modificar Minutos			      ********
+						// ***************************************************************
+					
+					void Modificar_minuto ( )
+				{
+			GPIOA->ODR = ~(BaseDatosled[digitos[15]]); //Displaying 1
+			GPIOB->ODR = 0x0040;
+			HAL_Delay(10);
+			
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[14]]); //Displaying 2
+			GPIOB->ODR = 0x0080;
+			HAL_Delay(10);
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[12]]); //Displaying 3			
+			GPIOB->ODR = 0x0100;
+			HAL_Delay(5);
+			
+			GPIOA->ODR = ~(BaseDatosled[digitos[11]]); //Displaying 4			
+			GPIOB->ODR = 0x0200;
+			HAL_Delay(5);
+
+					EstadoActualSumar = HAL_GPIO_ReadPin(GPIOB, Boton_subir_Pin);//Boton_subir;
+
+			//if ( EstadoActualSubir == 1 && EstadoAnteriorSubir == 0)
+				if ( EstadoActualSubir == 1 )
+				{
+				if (unidades == 1)
+					{	
+						digitos [11] = digitos [14] ++;
+						Minutos++ ;
+						}
+					else 
+						{
+							digitos[12] = digitos[15]++;
+							Minutos++;
+							if ( digitos[12] == 9)
+								{
+									unidades = 1;
+									digitos [12] =0;
+									
+									}
+						}
+					}
+				else 
+					{
+						unidades = 0;
+						}		
+					
+					}
+
+				
+
+
+		
 	// ***************************************************************
 	// ****Funcionpara encender led o motor a una hora determinada****
 	// ***************************************************************
@@ -271,7 +472,156 @@ int main(void)
 		
 			Get_rtc();
 			
-		visualizar_minutos_segundos();
+			//***************************
+			//*** gestion de botones ****
+			//***************************
+			// Boton menu
+
+			EstadoActualMenu = HAL_GPIO_ReadPin(GPIOB, Boton_Enter_Pin);    		//Enter_Pin   //Boton_menu;
+		
+			if ( EstadoActualMenu == 0 && EstadoAnteriorMenu == 1 && Menu < 4)
+			//if ( EstadoActualMenu == 0 && EstadoAnteriorMenu == 1 && Menu < 4)
+			
+				//if ( HAL_GPIO_ReadPin(GPIOB, Boton_Enter_Pin) == 0)
+				{
+					if (Encendido_Menu == 0)
+					
+				{
+					Menu ++;
+					EstadoAnteriorMenu = EstadoActualMenu;
+					Encendido_Menu = 1;
+					}
+				}
+
+			if (EstadoActualMenu== 1 && EstadoAnteriorMenu == 0)
+				//if ( HAL_GPIO_ReadPin(GPIOB, Enter_Pin) == 1 )
+			{
+					if ( Encendido_Menu == 1)
+					{
+ 				
+ 				EstadoAnteriorMenu = EstadoActualMenu;
+						Encendido_Menu = 0;
+				} 
+			}
+			// Boton Modificacion
+
+			EstadoActualModificacion = (HAL_GPIO_ReadPin(GPIOB, Boton_bajar_Pin));//Boton_modif;
+			if ( EstadoActualModificacion ==  0 && EstadoAnteriorModificacion == 1)
+				{
+					if (Encendido_Modificacion == 0)
+					{
+					if (Menu == 0)
+						{
+						Menu = 4;
+						}
+
+					 if (Menu == 4 )
+						{
+						Menu = 5;
+						}
+					 if (Menu == 5)
+						{
+						Menu = 4;
+						}
+					
+					EstadoAnteriorModificacion = EstadoActualModificacion ;
+						Encendido_Modificacion = 1;
+					}
+				
+					}
+
+			if ( EstadoActualModificacion ==  1 && EstadoAnteriorModificacion == 0)
+				{
+					if (Encendido_Modificacion == 1)
+					{
+					EstadoAnteriorModificacion = EstadoActualModificacion ;
+						Encendido_Modificacion = 0;
+				
+					}
+					}
+
+			//*****************************
+			//*** gestion de Pantallas ****
+			//*****************************
+
+			if (Menu == 0)
+			{
+				salir = 0;
+				if ( set_rtc == 1)
+					{
+				Set_time ( );		
+						}
+				visualizar_Horas_minutos(); // Pantalla principal
+			}
+
+			if (Menu == 1)
+			{
+				segundos ( );       // Pantalla Segundo
+			}
+			
+			if (Menu == 2)
+			{
+				alarma ( );         // Pantalla Alarma
+
+			}
+
+			if (Menu == 3)
+			{
+				Menu = 0 ;         
+				}
+			}
+
+			if (Menu == 4)
+			{
+				while ( salir == 1 )
+					{
+				Modificar_Hora ( ); // Pantalla Modificar Hora
+					if (~(HAL_GPIO_ReadPin(GPIOB, Boton_bajar_Pin))== 1) //        Boton_modificar == 1)
+						{
+							set_rtc = 1;
+							salir = 1;
+							}
+					if ( ~(HAL_GPIO_ReadPin(GPIOB, Boton_Enter_Pin))== 1)															//Boton_Menu == 1
+						{
+							Menu = 5;
+							salir = 1;
+							}
+
+
+					}
+			}
+			
+			
+
+
+
+
+
+
+
+				if (Menu == 5)
+					{
+					while (  salir == 1)
+					{
+				Modificar_minuto ( ); // Pantalla Modificar Minutos
+					
+					if (HAL_GPIO_ReadPin(GPIOB, Boton_subir_Pin) == 1)
+						{
+							set_rtc = 1;
+							salir = 1;
+							}
+					if ( HAL_GPIO_ReadPin(GPIOB, Boton_Enter_Pin) == 1)
+						{
+							Menu = 4;
+							salir = 1;
+							}
+
+							}
+			}
+
+		
+		
+		//visualizar_Horas_minutos();
 		
 		
 			
@@ -281,7 +631,7 @@ int main(void)
 		
 		
 			
-			
+		
 			
 			//HAL_UART_Transmit(huart1, (uint8_t *) _out, strlen(_out), 10);
 			//HAL_UART_Transmit(&huart1, (uint8_t *) buffer_dias, 10, 10);
@@ -293,7 +643,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-}
+
 
 /**
   * @brief System Clock Configuration
